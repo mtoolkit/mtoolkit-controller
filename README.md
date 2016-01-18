@@ -1,12 +1,12 @@
-# MToolkit - Core
+MToolkit - Controller
+=====================
+The controller module of [MToolkit](https://github.com/mtoolkit/mtoolkit) framework.
 
-Master Page
-===========
+# Summary
+- [Intro](#intro)
+- [View Life Cycle](#view_life_cycle)
 
-
-View Life Cycle
-===============
-
+# View Life Cycle
 0. Construct
 1. Init
 2. Load
@@ -14,24 +14,13 @@ View Life Cycle
 4. Render
 5. Post render
 
-Construct
----------
+## Construct
+## Init
+## Load
+## Pre render
+## Render
+## Post render
 
-Init
-----
+# Handler
 
-Load
-----
-
-Pre render
-----------
-
-Render
-------
-
-Post render
------------
-
-Handler
-=======
 
