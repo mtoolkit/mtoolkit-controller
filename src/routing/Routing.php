@@ -50,14 +50,22 @@ final class Routing
     public static function run()
     {
         $requestType = strtolower($_SERVER['REQUEST_METHOD']);
-        $root = dirname($_SERVER['SCRIPT_NAME']);
-        $role = self::getRole($root, $_SERVER['REQUEST_URI']);
         $routeList = self::getRouteList($requestType);
+        $role = self::getRole();
+
+        if (array_key_exists($role, $routeList) === false) {
+            throw new UndefinedRouteException($role);
+        }
 
         /* @var $route Route */
         $route = $routeList[$role];
         $className = $route->getClass();
         $methodName = $route->getMethod();
+
+        if (!class_exists($className)) {
+            throw new ControllerNotExistsException($className);
+        }
+
         $controller = new $className();
 
         if ($controller instanceof MAbstractController) {
@@ -67,11 +75,13 @@ final class Routing
         }
     }
 
-    private static function getRole($root, $role)
+    private static function getRole()
     {
+        $root = dirname($_SERVER['SCRIPT_NAME']);
+        $role = $_SERVER['REQUEST_URI'];
+
         if ($root != '/') {
-            $pattern = printf('/%s/', str_replace('/', '\/', $root));
-            $role = preg_replace($pattern, '', $role, 1);
+            $role = substr($role, strlen($root));
         }
 
         return $role;

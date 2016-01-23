@@ -1,6 +1,8 @@
 <?php
 namespace mtoolkit\controller\routing;
 
+use mtoolkit\core\MString;
+
 final class Route
 {
     /**
