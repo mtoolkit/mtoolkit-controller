@@ -1,8 +1,6 @@
 <?php
 namespace mtoolkit\controller\routing;
 
-use mtoolkit\core\MString;
-
 final class Route
 {
     /**
@@ -24,6 +22,11 @@ final class Route
      * @var string
      */
     private $method;
+
+    /**
+     * @var string
+     */
+    private $classPath;
 
     /**
      * @return string
@@ -57,11 +60,19 @@ final class Route
         return $this->method;
     }
 
+    /**
+     * @return string
+     */
+    public function getClassPath()
+    {
+        return $this->classPath;
+    }
+
     private function __construct()
     {
     }
 
-    public static function create($type, $role, $class, $method)
+    public static function create( $type, $role, $class, $method )
     {
         $route = new Route();
 
@@ -73,28 +84,38 @@ final class Route
         return $route;
     }
 
-    public static function get($role, $class, $method)
+    public static function get( $role, $class, $method )
     {
-        return self::create(RouteType::GET, $role, $class, $method);
+        return self::create( RouteType::GET, $role, $class, $method );
     }
 
-    public static function post($role, $class, $method)
+    public static function post( $role, $class, $method )
     {
-        return self::create(RouteType::GET, $role, $class, $method);
+        return self::create( RouteType::GET, $role, $class, $method );
     }
 
-    public static function put($role, $class, $method)
+    public static function put( $role, $class, $method )
     {
-        return self::create(RouteType::GET, $role, $class, $method);
+        return self::create( RouteType::GET, $role, $class, $method );
     }
 
-    public static function delete($role, $class, $method)
+    public static function delete( $role, $class, $method )
     {
-        return self::create(RouteType::GET, $role, $class, $method);
+        return self::create( RouteType::GET, $role, $class, $method );
     }
 
-    public static function all($role, $class, $method)
+    public static function all( $role, $class, $method )
     {
-        return self::create(RouteType::ALL, $role, $class, $method);
+        return self::create( RouteType::ALL, $role, $class, $method );
+    }
+
+    public static function page( $role, $classPath )
+    {
+        $route = new Route();
+        $route->type = RouteType::PAGE;
+        $route->role = $role;
+        $route->classPath = $classPath;
+
+        return $route;
     }
 }
