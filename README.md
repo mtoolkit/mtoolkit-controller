@@ -5,6 +5,8 @@ The controller module of [MToolkit](https://github.com/mtoolkit/mtoolkit) framew
 # Summary
 - [Intro](#intro)
 - [View Life Cycle](#view_life_cycle)
+- [Handler](#handler)
+- [Routing](#routing)
 
 # View Life Cycle
 0. Construct
@@ -23,4 +25,12 @@ The controller module of [MToolkit](https://github.com/mtoolkit/mtoolkit) framew
 
 # Handler
 
+# Routing
+## Friendly URL
 
+Create a simple .htaccess file on your root directory if you're using Apache with mod_rewrite enabled.
+```apache
+Options +FollowSymLinks
+RewriteEngine On
+RewriteRule ^(.*)$ index.php [NC,L]
+```
