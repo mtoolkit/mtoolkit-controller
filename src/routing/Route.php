@@ -112,7 +112,7 @@ final class Route
     public static function page( $role, $classPath )
     {
         $route = new Route();
-        $route->type = RouteType::PAGE;
+        $route->type = RouteType::CONTROLLER;
         $route->role = $role;
         $route->classPath = $classPath;
 

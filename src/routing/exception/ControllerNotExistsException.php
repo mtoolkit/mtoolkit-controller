@@ -1,7 +1,5 @@
 <?php
-namespace mtoolkit\controller\routing;
-
-use QueryPath\Exception;
+namespace mtoolkit\controller\routing\exception;
 
 class ControllerNotExistsException extends \Exception
 {

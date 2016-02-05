@@ -8,5 +8,5 @@ final class RouteType
     const PUT = 'put';
     const DELETE = 'delete';
     const ALL = '*';
-    const PAGE = 'page';
+    const CONTROLLER = 'controller';
 }

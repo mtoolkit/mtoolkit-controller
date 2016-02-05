@@ -2,6 +2,10 @@
 namespace mtoolkit\controller\routing;
 
 use mtoolkit\controller\MAbstractController;
+use mtoolkit\controller\routing\exception\ControllerNotExistsException;
+use mtoolkit\controller\routing\exception\EmptyRouteTypeException;
+use mtoolkit\controller\routing\exception\InvalidControllerException;
+use mtoolkit\controller\routing\exception\UndefinedRouteException;
 use mtoolkit\core\MString;
 
 final class Routing
@@ -40,7 +44,7 @@ final class Routing
                 self::$deleteRouteList[$r->getRole()] = $r;
                 break;
             case RouteType::ALL:
-            case RouteType::PAGE:
+            case RouteType::CONTROLLER:
                 self::$allRouteList[$r->getRole()] = $r;
                 break;
         }
@@ -63,7 +67,7 @@ final class Routing
         $methodName = $route->getMethod();
         $classPath = $route->getClassPath();
 
-        if( $route->getType() === RouteType::PAGE )
+        if( $route->getType() === RouteType::CONTROLLER )
         {
             require_once $classPath;
             return;

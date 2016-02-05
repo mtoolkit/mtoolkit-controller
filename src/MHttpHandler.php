@@ -22,7 +22,7 @@ namespace mtoolkit\controller;
 
 use mtoolkit\core\MDataType;
 
-abstract class MAbstractHttpHandler extends MAbstractController
+abstract class MHttpHandler extends MAbstractController implements MAutorunController
 {
     /**
      * @var string
@@ -42,10 +42,11 @@ abstract class MAbstractHttpHandler extends MAbstractController
         {
             $type = new \ReflectionClass($class);
             $abstract = $type->isAbstract();
-            
-            if( is_subclass_of($class, '\MToolkit\Controller\MAbstractHttpHandler')===true && $abstract===false )
+
+            if( is_subclass_of( $class, 'mtoolkit\controller\MAbstractHttpHandler' ) === true && $abstract === false )
             {
-                /* @var $handler MAbstractHttpHandler */ $handler = new $class();
+                /* @var $handler MHttpHandler */
+                $handler = new $class();
                 $handler->init();
                 $handler->run();
                 
@@ -55,9 +56,6 @@ abstract class MAbstractHttpHandler extends MAbstractController
                 {
                     echo $handler->getOutput();
                 }
-                
-                // Clean the $_SESSION from signals.
-                $handler->disconnectSignals();
                 
                 return;
             }
@@ -75,7 +73,7 @@ abstract class MAbstractHttpHandler extends MAbstractController
     
     /**
      * @param string $output
-     * @return \MToolkit\Controller\MAbstractHttpHandler
+     * @return \MToolkit\Controller\MHttpHandler
      */
     public function setOutput( $output )
     {
@@ -85,5 +83,3 @@ abstract class MAbstractHttpHandler extends MAbstractController
         return $this;
     }
 }
-
-register_shutdown_function(array('\MToolkit\Controller\MAbstractHttpHandler','autorun'));

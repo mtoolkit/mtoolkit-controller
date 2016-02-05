@@ -17,23 +17,22 @@ namespace mtoolkit\controller;
  *
  * You should have received a copy of the LGNU Lesser General Public License
  * along with MToolkit.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * @author  Michele Pagnin
  */
-use mtoolkit\core\MDataType;
-use mtoolkit\core\MMap;
-use mtoolkit\core\MObject;
 
 /**
  * MAbstractController class provides a base methods
  * for the controller classes. <br />
  */
-abstract class MAbstractController extends MObject
+abstract class MAbstractController
 {
-    /**
-     * @var MMap
-     */
-    private $controls;
+    private $parent;
+
+    public function __construct( MAbstractController $parent )
+    {
+        $this->parent = $parent;
+    }
 
     /**
      * @var MHttpResponse
@@ -41,46 +40,11 @@ abstract class MAbstractController extends MObject
     private $httpResponse = null;
 
     /**
-     * Constructs an abstract controller with the given <i>$parent</i>.
-     * 
-     * @param MObject $parent
-     */
-    public function __construct( MObject $parent = null )
-    {
-        parent::__construct( $parent );
-
-        $this->httpResponse = new MHttpResponse();
-        $this->controls = new MMap();
-    }
-
-    /**
      * @return MHttpResponse
      */
     public function getHttpResponse()
     {
         return $this->httpResponse;
-    }
-
-    /**
-     * @param string $id
-     * @param \MToolkit\Controller\MAbstractController $control
-     */
-    protected function addControl( $id, MAbstractController $control )
-    {
-        MDataType::mustBeString( $id );
-
-        $this->controls->insert( $id, $control );
-    }
-
-    /**
-     * @param string $id
-     * @return MAbstractController
-     */
-    protected function getControl( $id )
-    {
-        MDataType::mustBeString( $id );
-
-        return $this->controls->getValue( $id );
     }
 
 }
