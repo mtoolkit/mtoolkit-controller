@@ -96,7 +96,7 @@ final class MRoute
         return self::create( MRouteType::ALL, $role, $class, $method );
     }
 
-    public static function page( $role, $class )
+    public static function controller( $role, $class )
     {
         $route = new MRoute();
         $route->type = MRouteType::CONTROLLER;
