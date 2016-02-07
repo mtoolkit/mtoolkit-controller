@@ -31,15 +31,15 @@ namespace mtoolkit\controller;
  * 
  * @link http://msdn.microsoft.com/en-us/library/system.web.ui.masterpage.aspx ASP.Net notion for master page.
  */
-abstract class MAbstractMasterPageController extends MAbstractPageController
+class MMasterPageController extends MPageController
 {
     /**
      * Constructs an master page controller with the given <i>$template</i> and <i>$parent</i>.
      *
-     * @param string $template The path to the template of the master page. Must be set.
-     * @param MAbstractViewController $parent Must be set.
+     * @param string $template        The path to the template of the master page. Must be set.
+     * @param MPageController $parent Must be set.
      */
-    public function __construct( $template, MAbstractViewController $parent )
+    public function __construct( $template, MPageController $parent )
     {
         parent::__construct( $template, $parent );
         

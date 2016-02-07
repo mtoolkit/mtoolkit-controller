@@ -22,13 +22,13 @@ namespace mtoolkit\controller;
 use mtoolkit\core\MString;
 
 /**
- * <b>Every html template file must</b> contains the tag for the content-type, 
+ * <b>Every html template file must</b> contains the tag for the content-type,
  * also for the template of the view, not only for the page.<br />
  * <br />
  * For example: <br />
  * <code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;</code>
  */
-abstract class MAbstractPageController extends MAbstractViewController
+abstract class MPageController extends MViewController implements MAutorunController
 {
     const JAVASCRIPT_TEMPLATE = '<script type="text/javascript" src="%s"></script>';
     const CSS_TEMPLATE = '<link rel="%s" type="text/css" href="%s" media="%s" />';
@@ -46,7 +46,7 @@ abstract class MAbstractPageController extends MAbstractViewController
     private $javascript = array();
 
     /**
-     * @var MAbstractMasterPageController 
+     * @var MMasterPageController
      */
     private $masterPage = null;
 
@@ -56,10 +56,10 @@ abstract class MAbstractPageController extends MAbstractViewController
     private $masterPageParts = array();
 
     /**
-     * @var string|null 
+     * @var string|null
      */
     private $pageTitle = null;
-    
+
     /**
      * @var \QueryPath\DOMQuery|null
      */
@@ -67,9 +67,9 @@ abstract class MAbstractPageController extends MAbstractViewController
 
     /**
      * @param string $template
-     * @param MAbstractViewController $parent
+     * @param MViewController $parent
      */
-    public function __construct( $template = null, MAbstractViewController $parent = null )
+    public function __construct( $template = null, MViewController $parent = null )
     {
         parent::__construct( $template, $parent );
     }
@@ -80,8 +80,8 @@ abstract class MAbstractPageController extends MAbstractViewController
         {
             $this->css[] = array(
                 "href" => $href
-                , "rel" => $rel
-                , "media" => $media );
+            , "rel" => $rel
+            , "media" => $media);
         }
     }
 
@@ -89,7 +89,7 @@ abstract class MAbstractPageController extends MAbstractViewController
     {
         if( MString::isNullOrEmpty( $src ) === false )
         {
-            $this->javascript[] = array( "src" => $src );
+            $this->javascript[] = array("src" => $src);
         }
     }
 
@@ -112,10 +112,18 @@ abstract class MAbstractPageController extends MAbstractViewController
 
         foreach( $this->css as $item )
         {
-            $html.=sprintf( MAbstractPageController::CSS_TEMPLATE, $item["rel"], $item["href"], $item["media"] ) . "\n";
+            $html .= sprintf( MPageController::CSS_TEMPLATE, $item["rel"], $item["href"], $item["media"] ) . "\n";
         }
 
-        $this->qp->find( "head" )->append( $html );
+        $domQuery = $this->qp->find( "head" );
+        if( $domQuery->count() <= 0 )
+        {
+            trigger_error( 'head tag not found in page', E_USER_WARNING );
+        }
+        else
+        {
+            $domQuery->append( $html );
+        }
     }
 
     /**
@@ -127,16 +135,24 @@ abstract class MAbstractPageController extends MAbstractViewController
 
         foreach( $this->javascript as $item )
         {
-            $html.=sprintf( MAbstractPageController::JAVASCRIPT_TEMPLATE, $item["src"] ) . "\n";
+            $html .= sprintf( MPageController::JAVASCRIPT_TEMPLATE, $item["src"] ) . "\n";
         }
 
-        $this->qp->find( "head" )->append( $html );
+        $domQuery = $this->qp->find( "head" );
+        if( $domQuery->count() <= 0 )
+        {
+            trigger_error( 'head tag not found in page', E_USER_WARNING );
+        }
+        else
+        {
+            $domQuery->append( $html );
+        }
     }
 
     /**
      * Gets the master page.
-     * 
-     * @return MAbstractMasterPageController|null
+     *
+     * @return MMasterPageController|null
      */
     public function getMasterPage()
     {
@@ -145,11 +161,11 @@ abstract class MAbstractPageController extends MAbstractViewController
 
     /**
      * Sets the master page.
-     * 
-     * @param MAbstractMasterPageController $masterPage
-     * @return \MToolkit\Controller\MAbstractPageController
+     *
+     * @param MMasterPageController $masterPage
+     * @return \MToolkit\Controller\MPageController
      */
-    public function setMasterPage( MAbstractMasterPageController $masterPage )
+    public function setMasterPage( MMasterPageController $masterPage )
     {
         $this->masterPage = $masterPage;
         return $this;
@@ -159,22 +175,22 @@ abstract class MAbstractPageController extends MAbstractViewController
      * Set what part of the page (<i>$pageContentId</i> is the id of the html element)
      * will be rendered in <i>$masterPagePlaceholderId</i> (is the id of the html
      * of master page).
-     * 
+     *
      * @param string $masterPagePlaceholderId
      * @param string $pageContentId
      */
     public function addMasterPagePart( $masterPagePlaceholderId, $pageContentId )
     {
         $this->masterPageParts[] = array(
-            MAbstractPageController::MASTER_PAGE_PLACEHOLDER_ID => $masterPagePlaceholderId
-            , MAbstractPageController::PAGE_CONTENT_ID => $pageContentId
+            MPageController::MASTER_PAGE_PLACEHOLDER_ID => $masterPagePlaceholderId
+        , MPageController::PAGE_CONTENT_ID => $pageContentId
         );
     }
 
     protected function render()
     {
         parent::render();
-            
+
         // If the master page is not set, render the page.
         if( $this->masterPage == null )
         {
@@ -188,26 +204,27 @@ abstract class MAbstractPageController extends MAbstractViewController
         ob_start();
         $this->masterPage->show();
         $masterPageRendered = ob_get_clean();
-        /* @var $qpMasterPage \QueryPath\DOMQuery */ $qpMasterPage = qp( $masterPageRendered );
+        /* @var $qpMasterPage \QueryPath\DOMQuery */
+        $qpMasterPage = qp( $masterPageRendered );
 
         // renders the current page
         $pageRendered = $this->getOutput();
-        $qpPage=qp( $pageRendered );
+        $qpPage = qp( $pageRendered );
 
         // assemblies the master page and current page
         foreach( $this->masterPageParts as $masterPagePart )
         {
-            $masterPagePlaceholderId = '#' . $masterPagePart[MAbstractPageController::MASTER_PAGE_PLACEHOLDER_ID];
-            $pageContentId = '#' . $masterPagePart[MAbstractPageController::PAGE_CONTENT_ID];
+            $masterPagePlaceholderId = '#' . $masterPagePart[MPageController::MASTER_PAGE_PLACEHOLDER_ID];
+            $pageContentId = '#' . $masterPagePart[MPageController::PAGE_CONTENT_ID];
 
             $qpMasterPage->find( $masterPagePlaceholderId )->html( $qpPage->find( $pageContentId )->innerHtml() );
         }
 
         $this->setOutput( $qpMasterPage->html() );
-        
+
         $this->renderPage();
     }
-    
+
     private function renderPage()
     {
         $this->qp = qp( $this->getOutput() );
@@ -233,42 +250,21 @@ abstract class MAbstractPageController extends MAbstractViewController
         {
             $title = mb_convert_encoding( $this->pageTitle, $this->getCharset(), 'auto' );
 
-            $this->qp->find( "title" )->append( $title );
-        }
-    }
-
-    /**
-     * This function run the UI process of the web application.
-     * 
-     * - Call preRender method of the last MAbstractController.
-     * - Call render method of the last MAbstractController.
-     * - Call postRender method of the last MAbstractController.
-     * - Clean <i>$_SESSION</i>.
-     * 
-     * @throws \Exception when hte application try to running a non MAbstractController object.
-     */
-    public static function run()
-    {
-        /* @var $classes string[] */ $classes = array_reverse( get_declared_classes() );
-
-        foreach( $classes as $class )
-        {
-            if( is_subclass_of( $class, '\MToolkit\Controller\MAbstractViewController' ) === true )
+            $domQuery = $this->qp->find( "title" );
+            if( $domQuery->count() <= 0 )
             {
-                /* @var $controller \MToolkit\Controller\MAbstractViewController */ $controller = new $class();
-                $controller->show();
-
-                // Clean the $_SESSION from signals.
-                $controller->disconnectSignals();
-
-                return;
+                trigger_error( 'title tag not found in page', E_USER_WARNING );
+            }
+            else
+            {
+                $domQuery->append( $title );
             }
         }
     }
 
     /**
      * Gets the title of the page.
-     * 
+     *
      * @return string|null
      */
     public function getPageTitle()
@@ -278,9 +274,9 @@ abstract class MAbstractPageController extends MAbstractViewController
 
     /**
      * Sets the title of the page.
-     * 
+     *
      * @param string|null $pageTitle
-     * @return \MToolkit\Controller\MAbstractPageController
+     * @return \MToolkit\Controller\MPageController
      */
     public function setPageTitle( $pageTitle )
     {
@@ -288,9 +284,37 @@ abstract class MAbstractPageController extends MAbstractViewController
         return $this;
     }
 
+    /**
+     * This function run the UI process of the web application.
+     *
+     * - Call preRender method of the last MAbstractController.
+     * - Call render method of the last MAbstractController.
+     * - Call postRender method of the last MAbstractController.
+     * - Clean <i>$_SESSION</i>.
+     *
+     * @throws \Exception when hte application try to running a non MAbstractController object.
+     */
+    public static function autorun()
+    {
+        /* @var $classes string[] */
+        $classes = array_reverse( get_declared_classes() );
+
+        foreach( $classes as $class )
+        {
+            if( is_subclass_of( $class, '\mtoolkit\controller\MViewController' ) === true )
+            {
+                /* @var $controller MViewController */
+                $controller = new $class();
+                $controller->show();
+
+                return;
+            }
+        }
+    }
+
 }
 
-register_shutdown_function( array( 'MToolkit\Controller\MAbstractPageController', 'run' ) );
+register_shutdown_function( array(MPageController::class, 'autorun') );
 
 /**
  * CssRel is the enum for all possible <i>rel</i> attribute of the tag <i>link</i>.
