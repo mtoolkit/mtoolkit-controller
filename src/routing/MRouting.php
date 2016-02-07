@@ -205,7 +205,7 @@ class MRoutingInstace
     {
         $uri = $_SERVER['REQUEST_URI'];
 
-        if( $this->root != '/' )
+        if( $this->root != '/' && substr( $uri, 0, strlen($this->root) ) === $this->root )
         {
             $uri = substr( $uri, strlen( $this->root ) );
         }
