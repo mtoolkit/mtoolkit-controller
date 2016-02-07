@@ -4,7 +4,15 @@ The controller module of [MToolkit](https://github.com/mtoolkit/mtoolkit) framew
 
 # Summary
 - [Intro](#intro)
+- [How a controller works](#how_a_controller_works)
+- [Routing](#routing)
 - [View Life Cycle](#view_life_cycle)
+
+# How a controller works
+
+## Handler
+
+# Routing
 
 # View Life Cycle
 0. Construct
@@ -20,7 +28,5 @@ The controller module of [MToolkit](https://github.com/mtoolkit/mtoolkit) framew
 ## Pre render
 ## Render
 ## Post render
-
-# Handler
 
 

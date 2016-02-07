@@ -28,7 +28,7 @@ use mtoolkit\core\MString;
  * For example: <br />
  * <code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;</code>
  */
-class MPageController extends MViewController
+abstract class MPageController extends MViewController implements MAutorunController
 {
     const JAVASCRIPT_TEMPLATE = '<script type="text/javascript" src="%s"></script>';
     const CSS_TEMPLATE = '<link rel="%s" type="text/css" href="%s" media="%s" />';
@@ -115,7 +115,15 @@ class MPageController extends MViewController
             $html .= sprintf( MPageController::CSS_TEMPLATE, $item["rel"], $item["href"], $item["media"] ) . "\n";
         }
 
-        $this->qp->find( "head" )->append( $html );
+        $domQuery = $this->qp->find( "head" );
+        if( $domQuery->count() <= 0 )
+        {
+            trigger_error( 'head tag not found in page', E_USER_WARNING );
+        }
+        else
+        {
+            $domQuery->append( $html );
+        }
     }
 
     /**
@@ -130,7 +138,15 @@ class MPageController extends MViewController
             $html .= sprintf( MPageController::JAVASCRIPT_TEMPLATE, $item["src"] ) . "\n";
         }
 
-        $this->qp->find( "head" )->append( $html );
+        $domQuery = $this->qp->find( "head" );
+        if( $domQuery->count() <= 0 )
+        {
+            trigger_error( 'head tag not found in page', E_USER_WARNING );
+        }
+        else
+        {
+            $domQuery->append( $html );
+        }
     }
 
     /**
@@ -234,7 +250,15 @@ class MPageController extends MViewController
         {
             $title = mb_convert_encoding( $this->pageTitle, $this->getCharset(), 'auto' );
 
-            $this->qp->find( "title" )->append( $title );
+            $domQuery = $this->qp->find( "title" );
+            if( $domQuery->count() <= 0 )
+            {
+                trigger_error( 'title tag not found in page', E_USER_WARNING );
+            }
+            else
+            {
+                $domQuery->append( $title );
+            }
         }
     }
 
@@ -260,7 +284,37 @@ class MPageController extends MViewController
         return $this;
     }
 
+    /**
+     * This function run the UI process of the web application.
+     *
+     * - Call preRender method of the last MAbstractController.
+     * - Call render method of the last MAbstractController.
+     * - Call postRender method of the last MAbstractController.
+     * - Clean <i>$_SESSION</i>.
+     *
+     * @throws \Exception when hte application try to running a non MAbstractController object.
+     */
+    public static function autorun()
+    {
+        /* @var $classes string[] */
+        $classes = array_reverse( get_declared_classes() );
+
+        foreach( $classes as $class )
+        {
+            if( is_subclass_of( $class, '\mtoolkit\controller\MViewController' ) === true )
+            {
+                /* @var $controller MViewController */
+                $controller = new $class();
+                $controller->show();
+
+                return;
+            }
+        }
+    }
+
 }
+
+register_shutdown_function( array(MPageController::class, 'autorun') );
 
 /**
  * CssRel is the enum for all possible <i>rel</i> attribute of the tag <i>link</i>.

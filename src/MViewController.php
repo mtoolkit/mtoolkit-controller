@@ -23,7 +23,7 @@ namespace mtoolkit\controller;
 use mtoolkit\core\exception\MTemplateNotFoundException;
 use mtoolkit\core\MDataType;
 
-class MViewController extends MAbstractController implements MAutorunController
+abstract class MViewController extends MAbstractController
 {
     /**
      * @var boolean
@@ -229,34 +229,6 @@ class MViewController extends MAbstractController implements MAutorunController
     {
         $this->charset = $charset;
         return $this;
-    }
-
-    /**
-     * This function run the UI process of the web application.
-     *
-     * - Call preRender method of the last MAbstractController.
-     * - Call render method of the last MAbstractController.
-     * - Call postRender method of the last MAbstractController.
-     * - Clean <i>$_SESSION</i>.
-     *
-     * @throws \Exception when hte application try to running a non MAbstractController object.
-     */
-    public static function autorun()
-    {
-        /* @var $classes string[] */
-        $classes = array_reverse( get_declared_classes() );
-
-        foreach( $classes as $class )
-        {
-            if( is_subclass_of( $class, '\mtoolkit\controller\MViewController' ) === true )
-            {
-                /* @var $controller MViewController */
-                $controller = new $class();
-                $controller->show();
-
-                return;
-            }
-        }
     }
 
 }

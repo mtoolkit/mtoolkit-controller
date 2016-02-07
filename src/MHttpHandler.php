@@ -83,3 +83,5 @@ abstract class MHttpHandler extends MAbstractController implements MAutorunContr
         return $this;
     }
 }
+
+register_shutdown_function( array(MHttpHandler::class, 'autorun') );

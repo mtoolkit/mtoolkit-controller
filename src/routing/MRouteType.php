@@ -1,7 +1,7 @@
 <?php
 namespace mtoolkit\controller\routing;
 
-final class RouteType
+final class MRouteType
 {
     const GET = 'get';
     const POST = 'post';

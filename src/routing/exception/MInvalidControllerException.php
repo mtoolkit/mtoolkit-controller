@@ -1,7 +1,7 @@
 <?php
 namespace mtoolkit\controller\routing\exception;
 
-class InvalidControllerException extends \Exception
+class MInvalidControllerException extends \Exception
 {
     public function __construct($className)
     {

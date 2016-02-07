@@ -1,7 +1,7 @@
 <?php
 namespace mtoolkit\controller\routing\exception;
 
-class ControllerNotExistsException extends \Exception
+class MControllerNotExistsException extends \Exception
 {
     public function __construct($className)
     {
