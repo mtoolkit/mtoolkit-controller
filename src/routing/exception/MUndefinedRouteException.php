@@ -1,7 +1,7 @@
 <?php
-namespace mtoolkit\controller\routing;
+namespace mtoolkit\controller\routing\exception;
 
-class UndefinedRouteException extends \Exception
+class MUndefinedRouteException extends \Exception
 {
     public function __construct($route)
     {
