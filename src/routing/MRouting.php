@@ -104,12 +104,12 @@ class MRoutingInstace
 
         if( $requestedRoute === null )
         {
-            throw new MUndefinedRouteException( $requestedRoute->getRole() );
+            throw new MUndefinedRouteException( $this->getRequestedRole() );
         }
 
         if( $requestedRoute->getType() != MRouteType::CONTROLLER && $requestedRoute->getType() != MRouteType::ALL && $requestedRoute->getType() !== $requestType )
         {
-            throw new MUndefinedRouteException( $requestedRoute->getRole() );
+            throw new MUndefinedRouteException( $this->getRequestedRole() );
         }
 
         $className = $requestedRoute->getClass();
