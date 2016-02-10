@@ -21,11 +21,13 @@ namespace mtoolkit\controller;
      * @author  Michele Pagnin
      */
 
+use mtoolkit\core\MObject;
+
 /**
  * MAbstractController class provides a base methods
  * for the controller classes. <br />
  */
-abstract class MAbstractController
+abstract class MAbstractController extends MObject
 {
     private $parent;
 
