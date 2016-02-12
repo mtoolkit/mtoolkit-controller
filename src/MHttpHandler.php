@@ -20,68 +20,50 @@ namespace mtoolkit\controller;
  * @author  Michele Pagnin
  */
 
-use mtoolkit\core\MDataType;
-
-abstract class MHttpHandler extends MAbstractController implements MAutorunController
+abstract class MHttpHandler extends MAbstractController
 {
-    /**
-     * @var string
-     */
-    private $output=null;
-    
     public function init()
-    {}
-    
+    {
+    }
+
     public abstract function run();
-    
+
+    /**
+     * @return MHttpHandler
+     */
     public static function autorun()
     {
-        /* @var $classes string[] */ $classes = array_reverse( get_declared_classes() );
-        
+        /* @var $classes string[] */
+        $classes = array_reverse( get_declared_classes() );
+
         foreach( $classes as $class )
         {
-            $type = new \ReflectionClass($class);
+            $type = new \ReflectionClass( $class );
             $abstract = $type->isAbstract();
 
-            if( is_subclass_of( $class, 'mtoolkit\controller\MAbstractHttpHandler' ) === true && $abstract === false )
+            if( is_subclass_of( $class, MAutorunController::class ) === true && $abstract === false )
             {
                 /* @var $handler MHttpHandler */
                 $handler = new $class();
                 $handler->init();
                 $handler->run();
-                
-                MDataType::mustBeNullableString($handler->getOutput());
-                
-                if( $handler->getOutput()!=null )
-                {
-                    echo $handler->getOutput();
-                }
-                
-                return;
+
+                return $handler;
             }
         }
-    }
-    
-    /**
-     * Returns, by reference, the string to print after the execution of the handler.
-     * @return string
-     */
-    public function &getOutput()
-    {
-        return $this->output;
-    }
-    
-    /**
-     * @param string $output
-     * @return \MToolkit\Controller\MHttpHandler
-     */
-    public function setOutput( $output )
-    {
-        MDataType::mustBeNullableString($output);
-        
-        $this->output = $output;
-        return $this;
+
+        return null;
     }
 }
 
-register_shutdown_function( array(MHttpHandler::class, 'autorun') );
+register_shutdown_function( function ()
+{
+    /* @var $httpHandler MHttpHandler */
+    $httpHandler = MHttpHandler::autorun();
+
+    if( $httpHandler != null )
+    {
+        header( 'Content-Type: ' . $httpHandler->getHttpResponse()->getContentType() );
+        echo $httpHandler->getHttpResponse()->getOutput();
+    }
+} );

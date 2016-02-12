@@ -28,7 +28,7 @@ use mtoolkit\core\MString;
  * For example: <br />
  * <code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;</code>
  */
-abstract class MPageController extends MViewController implements MAutorunController
+abstract class MPageController extends MViewController
 {
     const JAVASCRIPT_TEMPLATE = '<script type="text/javascript" src="%s"></script>';
     const CSS_TEMPLATE = '<link rel="%s" type="text/css" href="%s" media="%s" />';
@@ -208,7 +208,7 @@ abstract class MPageController extends MViewController implements MAutorunContro
         $qpMasterPage = qp( $masterPageRendered );
 
         // renders the current page
-        $pageRendered = $this->getOutput();
+        $pageRendered = $this->getHttpResponse()->getOutput();
         $qpPage = qp( $pageRendered );
 
         // assemblies the master page and current page
@@ -220,14 +220,14 @@ abstract class MPageController extends MViewController implements MAutorunContro
             $qpMasterPage->find( $masterPagePlaceholderId )->html( $qpPage->find( $pageContentId )->innerHtml() );
         }
 
-        $this->setOutput( $qpMasterPage->html() );
+        $this->getHttpResponse()->setOutput( $qpMasterPage->html() );
 
         $this->renderPage();
     }
 
     private function renderPage()
     {
-        $this->qp = qp( $this->getOutput() );
+        $this->qp = qp( $this->getHttpResponse()->getOutput() );
 
         $this->renderTitle();
         $this->renderCss();
@@ -237,7 +237,7 @@ abstract class MPageController extends MViewController implements MAutorunContro
         $this->qp->writeHTML();
         $output = ob_get_clean();
 
-        $this->setOutput( $output );
+        $this->getHttpResponse()->setOutput( $output );
     }
 
     /**
@@ -284,37 +284,7 @@ abstract class MPageController extends MViewController implements MAutorunContro
         return $this;
     }
 
-    /**
-     * This function run the UI process of the web application.
-     *
-     * - Call preRender method of the last MAbstractController.
-     * - Call render method of the last MAbstractController.
-     * - Call postRender method of the last MAbstractController.
-     * - Clean <i>$_SESSION</i>.
-     *
-     * @throws \Exception when hte application try to running a non MAbstractController object.
-     */
-    public static function autorun()
-    {
-        /* @var $classes string[] */
-        $classes = array_reverse( get_declared_classes() );
-
-        foreach( $classes as $class )
-        {
-            if( is_subclass_of( $class, '\mtoolkit\controller\MViewController' ) === true )
-            {
-                /* @var $controller MViewController */
-                $controller = new $class();
-                $controller->show();
-
-                return;
-            }
-        }
-    }
-
 }
-
-register_shutdown_function( array(MPageController::class, 'autorun') );
 
 /**
  * CssRel is the enum for all possible <i>rel</i> attribute of the tag <i>link</i>.

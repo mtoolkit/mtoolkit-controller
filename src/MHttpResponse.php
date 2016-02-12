@@ -20,45 +20,93 @@ namespace mtoolkit\controller;
  * @author  Michele Pagnin
  */
 
+use mtoolkit\core\MDataType;
+
 class MHttpResponse
 {
-    private $contentType='text/html';
-    
+    /**
+     * Enables output of text to the outgoing HTTP response stream.<br>
+     * In other words, the output of the controller.
+     *
+     * @var string
+     */
+    private $output = "";
+
+    /**
+     * @var string
+     */
+    private $contentType = 'text/html';
+
+    /**
+     * @return string
+     */
+    public function getOutput()
+    {
+        return $this->output;
+    }
+
+    /**
+     * @param string $output
+     * @return MHttpResponse
+     */
+    public function setOutput( $output )
+    {
+        MDataType::mustBe( array( MDataType::STRING ) );
+
+        $this->output = $output;
+
+        return $this;
+    }
+
+    /**
+     * @param string $output
+     * @return MHttpResponse
+     */
+    public function appendOutput( $output )
+    {
+        MDataType::mustBe( array( MDataType::STRING ) );
+
+        $this->output .= $output;
+
+        return $this;
+    }
+
     /**
      * Redirects a client to a new URL. <br />
      * Specifies the new URL and whether execution of the current page should terminate.<br />
      * The redirect will not be done in case of a PHP error or PHP warning.
-     * 
+     *
      * @param string $url
      * @param boolean $endResponse Default <i>true</i>
      */
-    public function redirect($url, $endResponse=true)
+    public function redirect( $url, $endResponse = true )
     {
-        $lastError=  error_get_last();
-        if( $lastError["type"]==E_ERROR || $lastError["type"]==E_WARNING )
+        $lastError = error_get_last();
+        if( $lastError["type"] == E_ERROR || $lastError["type"] == E_WARNING )
         {
             return;
         }
-        
-        header('location: ' . $url);
-        
-        if( $endResponse===true )
+
+        header( 'location: ' . $url );
+
+        if( $endResponse === true )
         {
             die();
         }
     }
-    
+
     /**
      * Clears all content output from the buffer stream.
      */
     public function clear()
     {
+        $this->output = "";
         ob_get_clean();
     }
-    
+
     /**
      * Gets the HTTP MIME type of the output stream.
-     * 
+     *
      * @return string|null
      */
     public function getContentType()
@@ -68,13 +116,14 @@ class MHttpResponse
 
     /**
      * Sets the HTTP MIME type of the output stream.
-     * 
+     *
      * @param string $contentType
      * @return \MToolkit\Controller\MHttpResponse
      */
     public function setContentType( $contentType )
     {
         $this->contentType = $contentType;
+
         return $this;
     }
 }

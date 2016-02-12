@@ -27,13 +27,12 @@ use mtoolkit\core\MObject;
  * MAbstractController class provides a base methods
  * for the controller classes. <br />
  */
-abstract class MAbstractController extends MObject
+abstract class MAbstractController extends MObject implements MAutorunController
 {
-    private $parent;
 
     public function __construct( MAbstractController $parent = null )
     {
-        $this->parent = $parent;
+        parent::__construct($parent);
     }
 
     /**

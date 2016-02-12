@@ -37,14 +37,6 @@ abstract class MViewController extends MAbstractController
      */
     private $template = null;
 
-    /**
-     * It contains the controller rendered.
-     * It's valorized after the call the method <i>render()<i>.
-     *
-     * @var string|null
-     */
-    private $output = "";
-
     private $charset = 'UTF-8';
 
     /**
@@ -64,34 +56,6 @@ abstract class MViewController extends MAbstractController
 
     public function load()
     {
-    }
-
-    /**
-     * The method returns <i>$this->output</i>.
-     * <i>$this->output</i> contains the controller rendered.
-     * It's valorized after the call the method <i>render()<i>.
-     *
-     * @return string|null
-     */
-    protected function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * The method sets <i>$this->output</i>.
-     * <i>$this->output</i> contains the controller rendered.
-     *
-     * @param string $output
-     * @return \MToolkit\Controller\MViewController
-     */
-    protected function setOutput( $output )
-    {
-        MDataType::mustBeString( $output );
-
-        $this->output = $output;
-
-        return $this;
     }
 
     /**
@@ -115,6 +79,7 @@ abstract class MViewController extends MAbstractController
         MDataType::mustBeString( $template );
 
         $this->template = $template;
+
         return $this;
     }
 
@@ -139,6 +104,7 @@ abstract class MViewController extends MAbstractController
         MDataType::mustBeBoolean( $isVisible );
 
         $this->isVisible = $isVisible;
+
         return $this;
     }
 
@@ -147,7 +113,7 @@ abstract class MViewController extends MAbstractController
      */
     public static function isPostBack()
     {
-        return (count( $_POST ) > 0);
+        return ( count( $_POST ) > 0 );
     }
 
     /**
@@ -159,7 +125,7 @@ abstract class MViewController extends MAbstractController
         // It's better if the path of the template file is assigned.
         if( $this->template == null || file_exists( $this->template ) == false )
         {
-            throw new MTemplateNotFoundException( ($this->template == null ? 'null' : $this->template) );
+            throw new MTemplateNotFoundException( ( $this->template == null ? 'null' : $this->template ) );
         }
 
         if( $this->isVisible === false )
@@ -169,9 +135,10 @@ abstract class MViewController extends MAbstractController
 
         ob_start();
 
+        /** @noinspection PhpIncludeInspection */
         include $this->template;
 
-        $this->output .= ob_get_clean();
+        $this->getHttpResponse()->appendOutput( ob_get_clean() );
     }
 
     /**
@@ -212,12 +179,7 @@ abstract class MViewController extends MAbstractController
         $this->preRender();
         $this->render();
         $this->postRender();
-
-        echo $this->output;
-
         $this->unload();
-
-        $this->output = "";
     }
 
     public function getCharset()
@@ -228,7 +190,53 @@ abstract class MViewController extends MAbstractController
     public function setCharset( $charset )
     {
         $this->charset = $charset;
+
         return $this;
     }
 
+    /**
+     * This function run the UI process of the web application.
+     *
+     * - Call preRender method of the last MAbstractController.
+     * - Call render method of the last MAbstractController.
+     * - Call postRender method of the last MAbstractController.
+     * - Clean <i>$_SESSION</i>.
+     *
+     * @return MViewController
+     * @throws \Exception when hte application try to running a non MAbstractController object.
+     */
+    public static function autorun()
+    {
+        /* @var $classes string[] */
+        $classes = array_reverse( get_declared_classes() );
+
+        foreach( $classes as $class )
+        {
+            $type = new \ReflectionClass( $class );
+            $abstract = $type->isAbstract();
+
+            if( is_subclass_of( $class, MViewController::class ) === true && $abstract === false )
+            {
+                /* @var $controller MViewController */
+                $controller = new $class();
+
+                return $controller;
+            }
+        }
+
+        return null;
+    }
+
 }
+
+register_shutdown_function( function ()
+{
+    /* @var $viewController MViewController */
+    $viewController = MViewController::autorun();
+
+    if( $viewController != null )
+    {
+        header( 'Content-Type: ' . $viewController->getHttpResponse()->getContentType() );
+        echo $viewController->getHttpResponse()->getOutput();
+    }
+} );
