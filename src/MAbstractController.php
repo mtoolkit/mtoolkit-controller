@@ -29,16 +29,16 @@ use mtoolkit\core\MObject;
  */
 abstract class MAbstractController extends MObject implements MAutorunController
 {
-
-    public function __construct( MAbstractController $parent = null )
-    {
-        parent::__construct($parent);
-    }
-
     /**
      * @var MHttpResponse
      */
     private $httpResponse = null;
+
+    public function __construct( MAbstractController $parent = null )
+    {
+        parent::__construct($parent);
+        $this->httpResponse = new MHttpResponse();
+    }
 
     /**
      * @return MHttpResponse
