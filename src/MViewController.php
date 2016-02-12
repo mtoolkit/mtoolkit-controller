@@ -228,15 +228,3 @@ abstract class MViewController extends MAbstractController
     }
 
 }
-
-register_shutdown_function( function ()
-{
-    /* @var $viewController MViewController */
-    $viewController = MViewController::autorun();
-
-    if( $viewController != null )
-    {
-        header( 'Content-Type: ' . $viewController->getHttpResponse()->getContentType() );
-        echo $viewController->getHttpResponse()->getOutput();
-    }
-} );

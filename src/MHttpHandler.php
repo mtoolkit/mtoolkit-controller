@@ -58,6 +58,13 @@ abstract class MHttpHandler extends MAbstractController
 
 register_shutdown_function( function ()
 {
+    // Don't run the controller in cli mode
+    if( php_sapi_name() == 'cli' )
+    {
+        return;
+    }
+
+    // Run the controller
     /* @var $httpHandler MHttpHandler */
     $httpHandler = MHttpHandler::autorun();
 
