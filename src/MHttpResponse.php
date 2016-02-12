@@ -20,6 +20,7 @@ namespace mtoolkit\controller;
  * @author  Michele Pagnin
  */
 
+use mtoolkit\core\enum\ContentType;
 use mtoolkit\core\MDataType;
 
 class MHttpResponse
@@ -35,7 +36,7 @@ class MHttpResponse
     /**
      * @var string
      */
-    private $contentType = 'text/html';
+    private $contentType = ContentType::TEXT_HTML;
 
     /**
      * @return string
@@ -105,7 +106,8 @@ class MHttpResponse
     }
 
     /**
-     * Gets the HTTP MIME type of the output stream.
+     * Gets the HTTP MIME type of the output stream.<br>
+     * It is raccomended to use the constants in {@link ContentType} class
      *
      * @return string|null
      */

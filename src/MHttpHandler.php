@@ -70,7 +70,7 @@ register_shutdown_function( function ()
 
     if( $httpHandler != null )
     {
-        header( 'Content-Type: ' . $httpHandler->getHttpResponse()->getContentType() );
+        header( $httpHandler->getHttpResponse()->getContentType() );
         echo $httpHandler->getHttpResponse()->getOutput();
     }
 } );
