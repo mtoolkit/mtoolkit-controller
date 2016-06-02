@@ -9,7 +9,7 @@ final class MRoute
     private $type;
 
     /**
-     * @var string
+     * @var string The role to use in the routing process, for example: /user/
      */
     private $role;
 
