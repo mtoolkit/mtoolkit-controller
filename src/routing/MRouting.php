@@ -120,6 +120,7 @@ class MRoutingInstace
             throw new MControllerNotExistsException( $className );
         }
 
+        // If the class is not a {@link MAbstractController} will be run the method defined in the root.
         if( $requestedRoute->getType() !== MRouteType::CONTROLLER )
         {
             $controller = new $className();
