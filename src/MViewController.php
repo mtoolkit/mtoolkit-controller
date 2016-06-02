@@ -20,7 +20,7 @@ namespace mtoolkit\controller;
  * @author  Michele Pagnin
  */
 
-use mtoolkit\core\exception\MTemplateNotFoundException;
+use mtoolkit\controller\exception\MTemplateNotFoundException;
 use mtoolkit\core\MDataType;
 
 abstract class MViewController extends MAbstractController
