@@ -1,6 +1,6 @@
 <?php
 
-namespace mtoolkit\controller\routing\exception;
+namespace mtoolkit\controller\exception;
 
 class MInvalidRouteTypeException extends \Exception
 {

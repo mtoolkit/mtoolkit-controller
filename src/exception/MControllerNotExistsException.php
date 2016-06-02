@@ -1,5 +1,5 @@
 <?php
-namespace mtoolkit\controller\routing\exception;
+namespace mtoolkit\controller\exception;
 
 class MControllerNotExistsException extends \Exception
 {
